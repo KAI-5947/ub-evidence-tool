@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>未保存登記案件｜證據力判斷工具 V0.2</title>
+  <title>未保存登記案件｜證據力判斷工具 V0.3</title>
   <style>
     :root {
       --ink: #182b2b;
@@ -589,6 +589,108 @@
       white-space: pre-wrap;
     }
 
+    .preview-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.36fr) minmax(0, 0.64fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .paper-wrap {
+      overflow-x: auto;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #eef3ef;
+    }
+
+    .application-paper {
+      width: 794px;
+      min-height: 1123px;
+      margin: 0 auto;
+      padding: 54px 56px;
+      color: #111;
+      background: #fff;
+      box-shadow: 0 18px 38px rgba(24, 43, 43, 0.16);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    .application-paper h3 {
+      margin: 0;
+      text-align: center;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    .paper-subtitle {
+      margin: 8px 0 22px;
+      text-align: center;
+      color: #444;
+      font-size: 14px;
+    }
+
+    .paper-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .paper-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+
+    .paper-table th,
+    .paper-table td {
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid #222;
+      line-height: 1.55;
+      vertical-align: top;
+      word-break: break-word;
+    }
+
+    .paper-table th {
+      width: 23%;
+      background: #f4f4f4;
+      text-align: left;
+      font-weight: 900;
+    }
+
+    .paper-note {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid #222;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .paper-sign {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 34px;
+      font-size: 14px;
+    }
+
+    .paper-sign div {
+      min-height: 72px;
+      border-bottom: 1px solid #222;
+    }
+
+    .preview-empty {
+      display: grid;
+      place-items: center;
+      min-height: 420px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.7;
+    }
+
     .actions {
       display: flex;
       align-items: center;
@@ -621,7 +723,8 @@
     @media (max-width: 980px) {
       .hero-inner,
       .workspace,
-      .summary-layout {
+      .summary-layout,
+      .preview-layout {
         grid-template-columns: 1fr;
       }
 
@@ -719,6 +822,36 @@
         grid-column: 2;
       }
     }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        background: #fff;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      #applicationPaper,
+      #applicationPaper * {
+        visibility: visible;
+      }
+
+      #applicationPaper {
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        padding: 14mm;
+        box-shadow: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -728,13 +861,14 @@
         <div class="mark" aria-hidden="true">UB</div>
         <div>
           <strong>未保存登記案件｜證據力判斷工具</strong>
-          <span>V0.2 第一頁基本資料展示版</span>
+          <span>V0.3 申請書前端套印展示版</span>
         </div>
       </div>
       <div class="nav-links">
         <a href="#basic">基本資料</a>
         <a href="#print">申請書套印</a>
         <a href="#score">證據判斷</a>
+        <a href="#application-preview">套印預覽</a>
         <a href="#summary">客戶摘要</a>
       </div>
     </nav>
@@ -749,7 +883,7 @@
               <div class="eyebrow">未保存登記案件｜證據力判斷工具 V2.7.5 介面重建</div>
               <h1>案件基本資料／申請書列印</h1>
               <p class="lead">
-                這是展示用的 V0.2 前端畫面，僅呈現基本資料欄位，不連接資料庫或正式文件範本。
+                這是展示用的 V0.3 前端畫面，僅呈現基本資料欄位與申請書套印預覽，不連接資料庫或正式文件範本。
               </p>
             </div>
             <div class="status-badge">公開展示版</div>
@@ -986,6 +1120,46 @@
       </div>
     </section>
 
+    <section class="section" id="application-preview">
+      <div class="section-title">
+        <h2>申請書套印預覽區</h2>
+        <p>本功能為前端套印展示，不會儲存資料，也不會連接正式文件範本。</p>
+      </div>
+
+      <div class="preview-layout">
+        <article class="card">
+          <div class="card-header">
+            <h3>申請書設定</h3>
+            <p>選擇申請書類型後，系統會將第一頁基本資料帶入 A4 預覽版型。</p>
+          </div>
+          <div class="card-body">
+            <label>
+              申請書類型
+              <select id="applicationType">
+                <option value="legal-house">合法房屋申請書</option>
+                <option value="kaohsiung-copy">高雄市建物使用執照謄本及建築圖說複印申請書</option>
+              </select>
+            </label>
+            <div class="notice">
+              本功能為前端套印展示，不會儲存資料，也不會連接正式文件範本。
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="generateApplication" type="button">產生申請書預覽</button>
+              <button class="btn btn-secondary" id="printApplication" type="button">列印／另存 PDF</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="paper-wrap" aria-label="申請書 A4 預覽">
+          <div class="application-paper" id="applicationPaper">
+            <div class="preview-empty">
+              <p>請先選擇申請書類型，並點擊「產生申請書預覽」。<br>預覽將以 A4 紙張樣式呈現。</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="section" id="summary">
       <div class="section-title">
         <h2>客戶版摘要輸出區</h2>
@@ -1035,7 +1209,7 @@
   </main>
 
   <footer class="footer">
-    V0.2 第一頁基本資料展示版｜純靜態前端｜不含 Google Sheets ID、Google Drive 私密連結、Google Docs 範本 ID、API Key 或權限憑證
+    V0.3 申請書前端套印展示版｜純靜態前端｜不含 Google Sheets ID、Google Drive 私密連結、Google Docs 範本 ID、API Key 或權限憑證
   </footer>
 
   <script>
@@ -1058,6 +1232,10 @@
       tone: document.getElementById("tone"),
       nextStep: document.getElementById("nextStep"),
       clientMemo: document.getElementById("clientMemo"),
+      applicationType: document.getElementById("applicationType"),
+      applicationPaper: document.getElementById("applicationPaper"),
+      generateApplication: document.getElementById("generateApplication"),
+      printApplication: document.getElementById("printApplication"),
       previewCaseType: document.getElementById("previewCaseType"),
       previewLandType: document.getElementById("previewLandType"),
       heroScore: document.getElementById("heroScore"),
@@ -1081,6 +1259,24 @@
 
     function moneyRange(min, max) {
       return `NT$ ${min.toLocaleString("zh-TW")} - ${max.toLocaleString("zh-TW")}`;
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function fieldValue(field, fallback = "未填寫") {
+      return escapeHTML(showValue(field.value, fallback));
+    }
+
+    function todayText() {
+      const now = new Date();
+      return `${now.getFullYear()} 年 ${now.getMonth() + 1} 月 ${now.getDate()} 日`;
     }
 
     function getLevel(score) {
@@ -1177,6 +1373,9 @@
       fields.recommendation.textContent = level.recommendation;
 
       renderSummary(score, level, quote);
+      if (!fields.applicationPaper.querySelector(".preview-empty")) {
+        renderApplicationPreview();
+      }
     }
 
     function renderSummary(score, level, quote) {
@@ -1224,6 +1423,89 @@ ${showValue(fields.caseNote.value, "尚無備註")}
       window.setTimeout(() => fields.printAlert.classList.remove("is-visible"), 3600);
     }
 
+    function renderApplicationPreview() {
+      const type = fields.applicationType.value;
+      const title = type === "kaohsiung-copy"
+        ? "高雄市建物使用執照謄本及建築圖說複印申請書"
+        : "合法房屋申請書";
+      const subtitle = type === "kaohsiung-copy"
+        ? "建物使用執照謄本及建築圖說複印用途"
+        : "合法房屋資料初核與申請用途";
+      const addressLabel = type === "kaohsiung-copy" ? "建物地址" : "案件地址";
+      const purposeText = type === "kaohsiung-copy"
+        ? "申請建物使用執照謄本及建築圖說複印，供案件資料查核與後續程序使用。"
+        : "申請合法房屋相關資料初核，供未保存登記案件評估與後續申請書整理使用。";
+
+      fields.applicationPaper.innerHTML = `
+        <div class="paper-meta">
+          <span>申請日期：${todayText()}</span>
+          <span>前端展示套印預覽</span>
+        </div>
+        <h3>${title}</h3>
+        <div class="paper-subtitle">${subtitle}</div>
+        <table class="paper-table">
+          <tbody>
+            <tr>
+              <th>申請人姓名</th>
+              <td>${fieldValue(fields.customerName, "展示版未填")}</td>
+              <th>聯絡電話</th>
+              <td>${fieldValue(fields.phone, "展示版未填")}</td>
+            </tr>
+            <tr>
+              <th>${addressLabel}</th>
+              <td colspan="3">${fieldValue(fields.caseAddress)}</td>
+            </tr>
+            <tr>
+              <th>案件類型</th>
+              <td>${escapeHTML(fields.caseType.value)}</td>
+              <th>有無使用執照</th>
+              <td>${escapeHTML(fields.licenseStatus.value)}</td>
+            </tr>
+            <tr>
+              <th>土地段號</th>
+              <td>${fieldValue(fields.landSection)}</td>
+              <th>地號</th>
+              <td>${fieldValue(fields.landNumber)}</td>
+            </tr>
+            <tr>
+              <th>都市／非都市土地</th>
+              <td>${escapeHTML(fields.landType.value)}</td>
+              <th>使用分區</th>
+              <td>${fieldValue(fields.zoning)}</td>
+            </tr>
+            <tr>
+              <th>使用地類別</th>
+              <td>${fieldValue(fields.landUse)}</td>
+              <th>房屋稅起課年</th>
+              <td>${fieldValue(fields.taxStartYear)}</td>
+            </tr>
+            <tr>
+              <th>航照出現年</th>
+              <td>${fieldValue(fields.aerialPhotoYear)}</td>
+              <th>申請書類型</th>
+              <td>${title}</td>
+            </tr>
+            <tr>
+              <th>申請目的</th>
+              <td colspan="3">${purposeText}</td>
+            </tr>
+            <tr>
+              <th>備註</th>
+              <td colspan="3">${fieldValue(fields.caseNote, "尚無備註")}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="paper-note">
+          本預覽為 GitHub Pages 前端展示用途，資料僅於瀏覽器畫面中套印，不會儲存，也不會連接 Google Sheets、Google Drive 或 Google Docs 正式文件範本。
+        </div>
+        <div class="paper-sign">
+          <div>申請人簽章：</div>
+          <div>承辦人：</div>
+          <div>收件日期：</div>
+        </div>
+      `;
+    }
+
     async function copySummary() {
       try {
         await navigator.clipboard.writeText(fields.summaryOutput.textContent);
@@ -1255,7 +1537,8 @@ ${showValue(fields.caseNote.value, "尚無備註")}
       fields.serviceDepth,
       fields.tone,
       fields.nextStep,
-      fields.clientMemo
+      fields.clientMemo,
+      fields.applicationType
     ].forEach((field) => {
       field.addEventListener("input", calculate);
       field.addEventListener("change", calculate);
@@ -1267,6 +1550,13 @@ ${showValue(fields.caseNote.value, "尚無備註")}
 
     document.getElementById("refreshSummary").addEventListener("click", calculate);
     fields.copySummary.addEventListener("click", copySummary);
+    fields.generateApplication.addEventListener("click", renderApplicationPreview);
+    fields.printApplication.addEventListener("click", () => {
+      if (fields.applicationPaper.querySelector(".preview-empty")) {
+        renderApplicationPreview();
+      }
+      window.print();
+    });
     calculate();
   </script>
 </body>
