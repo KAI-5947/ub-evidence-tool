@@ -169,10 +169,10 @@
     }
 
     h1 {
-      margin: 14px 0 8px;
+      margin: 12px 0 8px;
       color: #102b27;
-      font-size: clamp(30px, 4.8vw, 52px);
-      line-height: 1.08;
+      font-size: 26px;
+      line-height: 1.22;
       letter-spacing: 0;
     }
 
@@ -663,6 +663,12 @@
         display: block;
       }
 
+      h1 {
+        margin-top: 10px;
+        font-size: 22px;
+        line-height: 1.25;
+      }
+
       .status-badge {
         display: inline-flex;
         margin-top: 14px;
@@ -743,7 +749,7 @@
               <div class="eyebrow">未保存登記案件｜證據力判斷工具 V2.7.5 介面重建</div>
               <h1>案件基本資料／申請書列印</h1>
               <p class="lead">
-                這是 GitHub Pages 公開展示用的 V0.2 前端畫面，只呈現第一頁操作流程與基本資料欄位，不連接資料庫、試算表或正式文件範本。
+                這是展示用的 V0.2 前端畫面，僅呈現基本資料欄位，不連接資料庫或正式文件範本。
               </p>
             </div>
             <div class="status-badge">公開展示版</div>
@@ -760,6 +766,7 @@
                   案件類型
                   <select id="caseType">
                     <option>未保存登記建物</option>
+                    <option>補發使用執照</option>
                     <option>農舍／增建初評</option>
                     <option>既有房屋合法性初評</option>
                     <option>土地使用分區查核</option>
