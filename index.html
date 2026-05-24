@@ -1,224 +1,1266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>未保存登記案件證據力判斷工具</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>未保存登記案件｜證據力判斷工具 V0.2</title>
   <style>
+    :root {
+      --ink: #182b2b;
+      --muted: #627171;
+      --line: #dbe6e2;
+      --paper: #fbfaf5;
+      --surface: #ffffff;
+      --soft: #eef6f2;
+      --deep: #0b5f49;
+      --green: #0f7a5d;
+      --mint: #dcefe8;
+      --red: #c84b3f;
+      --gold: #c89a3b;
+      --shadow: 0 18px 44px rgba(24, 43, 43, 0.11);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f3f8f5 0%, var(--paper) 42%, #ffffff 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      letter-spacing: 0;
     }
 
-    .header {
-      background: linear-gradient(135deg, #005BAC, #00AEEF);
-      color: white;
-      padding: 28px 20px;
-      text-align: center;
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
     }
 
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(15, 122, 93, 0.16);
+      background: rgba(251, 250, 245, 0.94);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--green), var(--deep));
+      box-shadow: 0 10px 22px rgba(15, 122, 93, 0.24);
+      font-weight: 900;
+    }
+
+    .brand strong,
+    .brand span {
+      display: block;
+      line-height: 1.25;
+    }
+
+    .brand strong {
+      font-size: 15px;
+    }
+
+    .brand span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: var(--deep);
+      font-size: 13px;
       font-weight: 800;
+      text-decoration: none;
     }
 
-    .header p {
-      margin-top: 10px;
-      font-size: 16px;
-      opacity: 0.95;
+    .nav-links a:hover {
+      background: rgba(15, 122, 93, 0.08);
     }
 
-    .container {
-      max-width: 900px;
-      margin: 24px auto;
-      padding: 0 18px;
+    .hero {
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(15, 122, 93, 0.14), rgba(200, 154, 59, 0.13)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0)),
+        var(--paper);
+    }
+
+    .hero-inner {
+      width: min(1180px, calc(100% - 32px));
+      min-height: calc(100svh - 64px);
+      margin: 0 auto;
+      padding: 38px 0 30px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 7px 10px;
+      border: 1px solid rgba(15, 122, 93, 0.2);
+      border-radius: 999px;
+      color: var(--deep);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--red);
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      color: #102b27;
+      font-size: clamp(30px, 4.8vw, 52px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: #405153;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .status-badge {
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      border: 1px solid rgba(15, 122, 93, 0.18);
+      border-radius: 8px;
+      color: var(--deep);
+      background: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .card {
-      background: white;
-      border-radius: 18px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 10px 30px rgba(24, 43, 43, 0.07);
+      overflow: hidden;
     }
 
-    .card h2 {
-      margin-top: 0;
-      font-size: 22px;
-      color: #005BAC;
+    .card-header {
+      padding: 18px 18px 13px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(15, 122, 93, 0.07), rgba(200, 154, 59, 0.07));
+    }
+
+    .card-header h2,
+    .card-header h3 {
+      margin: 0 0 6px;
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .card-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .basic-card {
+      align-self: stretch;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
     }
 
     label {
-      display: block;
+      display: grid;
+      gap: 7px;
+      color: #415153;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #d3dfda;
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #98a5a3;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(15, 122, 93, 0.13);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .quick-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quick-btn,
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .quick-btn {
+      width: 100%;
+      justify-content: space-between;
+      border: 1px solid rgba(15, 122, 93, 0.18);
+      color: var(--deep);
+      background: #fff;
+      text-align: left;
+    }
+
+    .quick-btn:hover {
+      background: var(--soft);
+    }
+
+    .quick-btn span {
+      min-width: 28px;
+      color: var(--red);
+      text-align: right;
+      font-weight: 900;
+    }
+
+    .notice {
       margin-top: 14px;
-      font-weight: 700;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      box-sizing: border-box;
-      margin-top: 6px;
       padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      font-size: 16px;
+      border: 1px solid rgba(200, 154, 59, 0.28);
+      border-radius: 8px;
+      color: #5d5131;
+      background: #fff8e8;
+      font-size: 13px;
+      line-height: 1.55;
     }
 
-    button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      border: none;
-      border-radius: 12px;
-      background: #005BAC;
-      color: white;
-      font-size: 18px;
-      font-weight: 800;
+    .result-card-body {
+      padding: 18px;
+    }
+
+    .result-visual {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 2px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result-visual h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .result-visual p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .score-ring {
+      --score-angle: 270deg;
+      width: 116px;
+      height: 116px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background:
+        conic-gradient(var(--green) 0deg, var(--green) var(--score-angle), #e7efeb var(--score-angle), #e7efeb 360deg);
+      box-shadow: inset 0 0 0 1px rgba(15, 122, 93, 0.1), 0 14px 30px rgba(15, 122, 93, 0.16);
+    }
+
+    .score-ring b {
+      width: 86px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--deep);
+      background: #fff;
+      font-size: 30px;
+      line-height: 1;
+      box-shadow: inset 0 0 0 1px rgba(15, 122, 93, 0.08);
+    }
+
+    .mini-panel {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .mini-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #d7e2de;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .mini-row strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .alert {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--deep);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .alert.is-visible {
+      display: block;
+    }
+
+    .section {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 44px 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(24px, 3.8vw, 34px);
+      letter-spacing: 0;
+    }
+
+    .section-title p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.92fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--deep);
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1;
+    }
+
+    .metric em {
+      display: block;
+      margin-top: 8px;
+      color: #566769;
+      font-size: 12px;
+      font-style: normal;
+      line-height: 1.45;
+    }
+
+    .evidence-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .evidence-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .evidence-item input {
+      width: 20px;
+      height: 20px;
+      min-height: auto;
+      accent-color: var(--green);
+    }
+
+    .evidence-item strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 14px;
+    }
+
+    .evidence-item span span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .points {
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .result {
-      margin-top: 18px;
+      margin-top: 16px;
       padding: 16px;
-      border-radius: 12px;
-      background: #eef6ff;
-      border-left: 6px solid #005BAC;
-      line-height: 1.7;
-      white-space: pre-line;
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--deep), var(--green));
+    }
+
+    .result span {
+      display: block;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .result strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 24px;
+      line-height: 1.18;
+    }
+
+    .summary-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .summary-box {
+      min-height: 360px;
+      padding: 20px;
+      border: 1px solid rgba(15, 122, 93, 0.18);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(15, 122, 93, 0.06), rgba(255, 255, 255, 0) 28%),
+        #fff;
+      color: #2f4042;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 12px 26px rgba(15, 122, 93, 0.22);
+    }
+
+    .btn-secondary {
+      color: var(--deep);
+      border: 1px solid rgba(15, 122, 93, 0.22);
+      background: #fff;
     }
 
     .footer {
+      padding: 28px 16px 42px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: #fff;
       text-align: center;
-      color: #6b7280;
-      font-size: 14px;
-      margin: 30px 0;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-inner,
+      .workspace,
+      .summary-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        min-height: auto;
+        padding-top: 34px;
+      }
+
+      .section-title {
+        display: block;
+      }
+
+      .section-title p {
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav,
+      .hero-inner,
+      .section {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .brand span,
+      .nav-links {
+        display: none;
+      }
+
+      .nav {
+        min-height: 58px;
+      }
+
+      .hero-inner {
+        padding: 26px 0 28px;
+      }
+
+      .page-title {
+        display: block;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        margin-top: 14px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .form-grid,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 34px 0;
+      }
+
+      .actions {
+        align-items: stretch;
+      }
+
+      .btn,
+      .quick-btn {
+        width: 100%;
+      }
+
+      .result-visual {
+        grid-template-columns: 1fr;
+      }
+
+      .score-ring {
+        width: 104px;
+        height: 104px;
+      }
+
+      .score-ring b {
+        width: 78px;
+        height: 78px;
+        font-size: 28px;
+      }
+
+      .evidence-item {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .points {
+        grid-column: 2;
+      }
     }
   </style>
 </head>
 <body>
+  <header class="topbar">
+    <nav class="nav" aria-label="主要導覽">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">UB</div>
+        <div>
+          <strong>未保存登記案件｜證據力判斷工具</strong>
+          <span>V0.2 第一頁基本資料展示版</span>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#basic">基本資料</a>
+        <a href="#print">申請書套印</a>
+        <a href="#score">證據判斷</a>
+        <a href="#summary">客戶摘要</a>
+      </div>
+    </nav>
+  </header>
 
-  <div class="header">
-    <h1>未保存登記案件證據力判斷工具</h1>
-    <p>案件初步判斷・證據力分級・報價建議</p>
-  </div>
+  <main>
+    <section class="hero" id="basic">
+      <div class="hero-inner">
+        <article class="basic-card">
+          <div class="page-title">
+            <div>
+              <div class="eyebrow">未保存登記案件｜證據力判斷工具 V2.7.5 介面重建</div>
+              <h1>案件基本資料／申請書列印</h1>
+              <p class="lead">
+                這是 GitHub Pages 公開展示用的 V0.2 前端畫面，只呈現第一頁操作流程與基本資料欄位，不連接資料庫、試算表或正式文件範本。
+              </p>
+            </div>
+            <div class="status-badge">公開展示版</div>
+          </div>
 
-  <div class="container">
+          <div class="card">
+            <div class="card-header">
+              <h2>案件基本資料</h2>
+              <p>欄位皆為前端展示與面談記錄用途，請勿輸入正式客戶資料或機敏資訊。</p>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <label>
+                  案件類型
+                  <select id="caseType">
+                    <option>未保存登記建物</option>
+                    <option>農舍／增建初評</option>
+                    <option>既有房屋合法性初評</option>
+                    <option>土地使用分區查核</option>
+                  </select>
+                </label>
+                <label>
+                  客戶姓名
+                  <input id="customerName" placeholder="展示版請勿輸入正式姓名">
+                </label>
+                <label>
+                  聯絡電話
+                  <input id="phone" inputmode="tel" placeholder="展示版請勿輸入正式電話">
+                </label>
+                <label>
+                  案件地址
+                  <input id="caseAddress" placeholder="例：某市某區示範路段">
+                </label>
+                <label>
+                  土地段號
+                  <input id="landSection" placeholder="例：示範段">
+                </label>
+                <label>
+                  地號
+                  <input id="landNumber" placeholder="例：000-0 地號">
+                </label>
+                <label>
+                  都市／非都市土地
+                  <select id="landType">
+                    <option>都市土地</option>
+                    <option>非都市土地</option>
+                    <option>待查詢</option>
+                  </select>
+                </label>
+                <label>
+                  使用分區
+                  <input id="zoning" placeholder="例：住宅區、農業區、待查詢">
+                </label>
+                <label>
+                  使用地類別
+                  <input id="landUse" placeholder="例：建築用地、農牧用地、待查詢">
+                </label>
+                <label>
+                  房屋稅起課年
+                  <input id="taxStartYear" inputmode="numeric" placeholder="例：民國 85 年">
+                </label>
+                <label>
+                  航照出現年
+                  <input id="aerialPhotoYear" inputmode="numeric" placeholder="例：民國 83 年">
+                </label>
+                <label>
+                  有無使用執照
+                  <select id="licenseStatus">
+                    <option>待確認</option>
+                    <option>有使用執照</option>
+                    <option>無使用執照</option>
+                    <option>資料不足</option>
+                  </select>
+                </label>
+                <label class="full">
+                  備註
+                  <textarea id="caseNote" placeholder="可記錄面談重點、待補資料、申請書列印注意事項。"></textarea>
+                </label>
+              </div>
+            </div>
+          </div>
+        </article>
 
-    <div class="card">
-      <h2>案件基本資料</h2>
+        <aside class="side-stack" id="print">
+          <section class="card">
+            <div class="card-header">
+              <h3>申請書套印快捷區</h3>
+              <p>此區只做前端展示，正式版才會串接申請書套印流程。</p>
+            </div>
+            <div class="card-body">
+              <div class="quick-grid">
+                <button class="quick-btn" type="button" data-template="案件基本資料表">案件基本資料表 <span>列印</span></button>
+                <button class="quick-btn" type="button" data-template="未保存登記初評申請書">未保存登記初評申請書 <span>套印</span></button>
+                <button class="quick-btn" type="button" data-template="土地使用分區查詢單">土地使用分區查詢單 <span>套印</span></button>
+                <button class="quick-btn" type="button" data-template="證據資料補件清單">證據資料補件清單 <span>產生</span></button>
+              </div>
+              <div class="notice">
+                正式版將連接申請書套印功能；公開展示版不包含 Google Docs 範本 ID、Drive 私密連結或任何權限憑證。
+              </div>
+              <div class="alert" id="printAlert" role="status"></div>
+            </div>
+          </section>
 
-      <label>客戶姓名</label>
-      <input id="clientName" type="text" placeholder="請輸入客戶姓名">
+          <section class="card" aria-label="目前評估結果">
+            <div class="result-card-body">
+              <div class="result-visual">
+                <div>
+                  <h3>目前評估結果</h3>
+                  <p>依勾選證據與案件條件即時更新</p>
+                </div>
+                <div class="score-ring" id="scoreRing" aria-label="證據分數圓環圖">
+                  <b id="heroScore">75</b>
+                </div>
+              </div>
+              <div class="mini-panel">
+              <div class="mini-row">
+                <span>案件類型</span>
+                <strong id="previewCaseType">未保存登記建物</strong>
+              </div>
+              <div class="mini-row">
+                <span>土地屬性</span>
+                <strong id="previewLandType">都市土地</strong>
+              </div>
+              <div class="mini-row">
+                <span>分數等級</span>
+                <strong id="heroLevel">A級：證據力佳</strong>
+              </div>
+              <div class="mini-row">
+                <span>建議報價</span>
+                <strong id="heroQuote">NT$ 36,000 - 48,000</strong>
+              </div>
+              <div class="mini-row">
+                <span>建議下一步</span>
+                <strong id="heroNextStep">提供正式報價</strong>
+              </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
 
-      <label>案件地址</label>
-      <input id="address" type="text" placeholder="請輸入案件地址">
+    <section class="section" id="score">
+      <div class="section-title">
+        <h2>證據力判斷與建議報價</h2>
+        <p>保留 V0.1 的基本前端功能：勾選證據項目後，即時更新分數、等級與報價區間。</p>
+      </div>
 
-      <label>土地段號</label>
-      <input id="landSection" type="text" placeholder="例如：檨興段">
+      <div class="workspace">
+        <article class="card">
+          <div class="card-header">
+            <h3>證據項目</h3>
+            <p>以下為展示用檢核項目，可協助面談時快速確認補件方向。</p>
+          </div>
+          <div class="card-body">
+            <div class="evidence-list" aria-label="證據項目">
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="18" checked>
+                <span><strong>房屋稅籍或起課資料</strong><span>可輔助判斷建物存在與課稅時點。</span></span>
+                <span class="points">+18</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="16" checked>
+                <span><strong>歷年航照或圖資佐證</strong><span>可對照建物出現年份與使用情形。</span></span>
+                <span class="points">+16</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="14" checked>
+                <span><strong>土地謄本或地籍資料</strong><span>可確認土地標示、面積與權利狀態。</span></span>
+                <span class="points">+14</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="12">
+                <span><strong>使用分區或使用地查詢</strong><span>可判斷土地管制與申請風險。</span></span>
+                <span class="points">+12</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="14" checked>
+                <span><strong>現況照片或現場紀錄</strong><span>可呈現建物現況、構造與使用狀態。</span></span>
+                <span class="points">+14</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="12">
+                <span><strong>使用執照或建管資料查詢</strong><span>可釐清是否已有正式建管文件。</span></span>
+                <span class="points">+12</span>
+              </label>
+              <label class="evidence-item">
+                <input type="checkbox" class="evidence" data-points="14" checked>
+                <span><strong>申請目的與補件清單</strong><span>可協助安排申請書列印與後續服務。</span></span>
+                <span class="points">+14</span>
+              </label>
+            </div>
+          </div>
+        </article>
 
-      <label>地號</label>
-      <input id="landNo" type="text" placeholder="例如：852地號">
+        <article class="card">
+          <div class="card-header">
+            <h3>即時判斷</h3>
+            <p>分數與報價為展示用規則，正式案件仍需人工複核。</p>
+          </div>
+          <div class="card-body">
+            <div class="metric-grid">
+              <div class="metric">
+                <span>證據分數</span>
+                <strong id="scoreValue">76</strong>
+                <em>滿分 100，作為初步排序參考。</em>
+              </div>
+              <div class="metric">
+                <span>分數等級</span>
+                <strong id="levelValue">A</strong>
+                <em id="levelText">證據完整，可進入申請書整理。</em>
+              </div>
+              <div class="metric">
+                <span>建議報價</span>
+                <strong id="quoteValue">36K-48K</strong>
+                <em>依資料完整度與土地型態微調。</em>
+              </div>
+            </div>
+            <label>
+              服務深度
+              <select id="serviceDepth">
+                <option value="basic">基本資料建檔</option>
+                <option value="standard" selected>標準初評與申請書整理</option>
+                <option value="advanced">完整顧問與補件規劃</option>
+              </select>
+            </label>
+            <div class="result">
+              <span>系統建議</span>
+              <strong id="recommendation">可安排正式證據整理與申請書列印說明。</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
 
-      <label>案件類型</label>
-      <select id="caseType">
-        <option value="">請選擇</option>
-        <option>未保存登記建物案件</option>
-        <option>合法房屋更正編定案件</option>
-      </select>
-    </div>
+    <section class="section" id="summary">
+      <div class="section-title">
+        <h2>客戶版摘要輸出區</h2>
+        <p>將第一頁資料轉成可讀摘要，方便面談後續說明。公開版僅在瀏覽器前端產生，不會上傳或儲存。</p>
+      </div>
 
-    <div class="card">
-      <h2>證據資料初評</h2>
+      <div class="summary-layout">
+        <article class="card">
+          <div class="card-header">
+            <h3>摘要設定</h3>
+            <p>可調整摘要語氣與下一步行動，內容會同步更新。</p>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <label>
+                摘要語氣
+                <select id="tone">
+                  <option value="professional" selected>專業正式</option>
+                  <option value="friendly">親切說明</option>
+                  <option value="concise">精簡重點</option>
+                </select>
+              </label>
+              <label>
+                建議下一步
+                <select id="nextStep">
+                  <option>安排資料補件</option>
+                  <option selected>提供正式報價</option>
+                  <option>安排申請書列印</option>
+                  <option>暫列觀察案件</option>
+                </select>
+              </label>
+              <label class="full">
+                客戶說明備註
+                <textarea id="clientMemo" placeholder="例：建議先補齊房屋稅籍、航照年份與土地使用分區資料。">建議先補齊房屋稅籍、航照年份與土地使用分區資料，再進一步確認申請書套印與後續服務範圍。</textarea>
+              </label>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" id="refreshSummary" type="button">產生客戶摘要</button>
+              <button class="btn btn-secondary" id="copySummary" type="button">複製客戶摘要</button>
+            </div>
+          </div>
+        </article>
 
-      <label>房屋稅籍資料</label>
-      <select id="taxEvidence">
-        <option value="0">尚未確認</option>
-        <option value="20">有房屋稅籍資料</option>
-        <option value="10">資料不完整</option>
-        <option value="0">沒有資料</option>
-      </select>
+        <article class="summary-box" id="summaryOutput" aria-live="polite"></article>
+      </div>
+    </section>
+  </main>
 
-      <label>水電證明</label>
-      <select id="utilityEvidence">
-        <option value="0">尚未確認</option>
-        <option value="20">有早期水電證明</option>
-        <option value="10">有近期水電資料</option>
-        <option value="0">沒有資料</option>
-      </select>
-
-      <label>航照或歷史影像</label>
-      <select id="photoEvidence">
-        <option value="0">尚未確認</option>
-        <option value="20">可清楚判讀建物存在</option>
-        <option value="10">影像可疑但不明確</option>
-        <option value="0">沒有影像佐證</option>
-      </select>
-
-      <label>土地屬性風險</label>
-      <select id="landRisk">
-        <option value="0">一般風險</option>
-        <option value="-10">中度風險</option>
-        <option value="-20">高度風險</option>
-      </select>
-
-      <button onclick="calculateCase()">產生初步判斷</button>
-
-      <div id="result" class="result">請輸入資料後按下「產生初步判斷」。</div>
-    </div>
-
-    <div class="footer">
-      ub-evidence-tool｜GitHub Pages 測試版
-    </div>
-
-  </div>
+  <footer class="footer">
+    V0.2 第一頁基本資料展示版｜純靜態前端｜不含 Google Sheets ID、Google Drive 私密連結、Google Docs 範本 ID、API Key 或權限憑證
+  </footer>
 
   <script>
-    function calculateCase() {
-      const clientName = document.getElementById("clientName").value || "未填寫";
-      const address = document.getElementById("address").value || "未填寫";
-      const caseType = document.getElementById("caseType").value || "未選擇";
+    const evidenceInputs = Array.from(document.querySelectorAll(".evidence"));
+    const fields = {
+      caseType: document.getElementById("caseType"),
+      customerName: document.getElementById("customerName"),
+      phone: document.getElementById("phone"),
+      caseAddress: document.getElementById("caseAddress"),
+      landSection: document.getElementById("landSection"),
+      landNumber: document.getElementById("landNumber"),
+      landType: document.getElementById("landType"),
+      zoning: document.getElementById("zoning"),
+      landUse: document.getElementById("landUse"),
+      taxStartYear: document.getElementById("taxStartYear"),
+      aerialPhotoYear: document.getElementById("aerialPhotoYear"),
+      licenseStatus: document.getElementById("licenseStatus"),
+      caseNote: document.getElementById("caseNote"),
+      serviceDepth: document.getElementById("serviceDepth"),
+      tone: document.getElementById("tone"),
+      nextStep: document.getElementById("nextStep"),
+      clientMemo: document.getElementById("clientMemo"),
+      previewCaseType: document.getElementById("previewCaseType"),
+      previewLandType: document.getElementById("previewLandType"),
+      heroScore: document.getElementById("heroScore"),
+      scoreRing: document.getElementById("scoreRing"),
+      heroLevel: document.getElementById("heroLevel"),
+      heroQuote: document.getElementById("heroQuote"),
+      heroNextStep: document.getElementById("heroNextStep"),
+      scoreValue: document.getElementById("scoreValue"),
+      levelValue: document.getElementById("levelValue"),
+      levelText: document.getElementById("levelText"),
+      quoteValue: document.getElementById("quoteValue"),
+      recommendation: document.getElementById("recommendation"),
+      summaryOutput: document.getElementById("summaryOutput"),
+      copySummary: document.getElementById("copySummary"),
+      printAlert: document.getElementById("printAlert")
+    };
 
-      const tax = Number(document.getElementById("taxEvidence").value);
-      const utility = Number(document.getElementById("utilityEvidence").value);
-      const photo = Number(document.getElementById("photoEvidence").value);
-      const landRisk = Number(document.getElementById("landRisk").value);
+    function showValue(value, fallback = "未填寫") {
+      return value && value.trim() ? value.trim() : fallback;
+    }
 
-      const score = tax + utility + photo + landRisk;
+    function moneyRange(min, max) {
+      return `NT$ ${min.toLocaleString("zh-TW")} - ${max.toLocaleString("zh-TW")}`;
+    }
 
-      let grade = "";
-      let suggestion = "";
-      let price = "";
+    function getLevel(score) {
+      if (score >= 75) {
+        return {
+          grade: "A",
+          label: "A級：證據力佳",
+          text: "證據力佳，可進入申請書整理。",
+          recommendation: "可安排正式證據整理與申請書列印說明。"
+        };
+      }
+      if (score >= 55) {
+        return {
+          grade: "B",
+          label: "B級：可進一步查證",
+          text: "已有主要資料，可進一步查證並補齊關鍵文件。",
+          recommendation: "可先列出補件清單，再確認申請書套印內容。"
+        };
+      }
+      if (score >= 35) {
+        return {
+          grade: "C",
+          label: "C級：資料不足",
+          text: "資料不足，建議先補齊核心文件。",
+          recommendation: "建議先補齊稅籍、航照或土地使用分區資料。"
+        };
+      }
+      return {
+        grade: "D",
+        label: "D級：風險偏高",
+        text: "風險偏高，需先建立基本案件資料並審慎評估。",
+        recommendation: "建議先完成第一頁基本資料，再重新評估。"
+      };
+    }
 
-      if (score >= 50) {
-        grade = "A級：證據力佳";
-        suggestion = "可進入查證型評估或送件前完整規劃。";
-        price = "建議報價：22,000元～45,000元";
+    function getQuote(score) {
+      let min = 10000;
+      let max = 18000;
+
+      if (score >= 75) {
+        min = 36000;
+        max = 48000;
+      } else if (score >= 55) {
+        min = 26000;
+        max = 36000;
       } else if (score >= 35) {
-        grade = "B級：可進一步查證";
-        suggestion = "建議先補強資料，再判斷是否正式代辦。";
-        price = "建議報價：10,000元～22,000元";
-      } else if (score >= 20) {
-        grade = "C級：資料不足";
-        suggestion = "建議先做書面初評，確認是否值得繼續投入。";
-        price = "建議報價：3,000元～10,000元";
-      } else {
-        grade = "D級：風險偏高";
-        suggestion = "目前不建議直接承接正式代辦，應先補資料。";
-        price = "建議報價：先收快速初評 3,000元";
+        min = 18000;
+        max = 28000;
       }
 
-      document.getElementById("result").innerText =
-        "客戶姓名：" + clientName + "\n" +
-        "案件地址：" + address + "\n" +
-        "案件類型：" + caseType + "\n\n" +
-        "初步分數：" + score + " 分\n" +
-        "證據等級：" + grade + "\n" +
-        "建議下一步：" + suggestion + "\n" +
-        price;
-    }
-  </script>
+      if (fields.serviceDepth.value === "advanced") {
+        min += 10000;
+        max += 16000;
+      } else if (fields.serviceDepth.value === "basic") {
+        min -= 5000;
+        max -= 7000;
+      }
 
+      if (fields.landType.value === "非都市土地") {
+        min += 4000;
+        max += 7000;
+      }
+
+      return {
+        min: Math.max(min, 8000),
+        max: Math.max(max, 15000)
+      };
+    }
+
+    function getCheckedEvidenceText() {
+      return evidenceInputs
+        .filter((input) => input.checked)
+        .map((input) => input.closest(".evidence-item").querySelector("strong").textContent);
+    }
+
+    function calculate() {
+      const score = evidenceInputs.reduce((sum, input) => {
+        return sum + (input.checked ? Number(input.dataset.points) : 0);
+      }, 0);
+      const level = getLevel(score);
+      const quote = getQuote(score);
+
+      fields.previewCaseType.textContent = fields.caseType.value;
+      fields.previewLandType.textContent = fields.landType.value;
+      fields.heroScore.textContent = score;
+      fields.scoreRing.style.setProperty("--score-angle", `${Math.min(score, 100) * 3.6}deg`);
+      fields.heroLevel.textContent = level.label;
+      fields.heroQuote.textContent = moneyRange(quote.min, quote.max);
+      fields.heroNextStep.textContent = fields.nextStep.value;
+      fields.scoreValue.textContent = score;
+      fields.levelValue.textContent = level.grade;
+      fields.levelText.textContent = level.text;
+      fields.quoteValue.textContent = `${Math.round(quote.min / 1000)}K-${Math.round(quote.max / 1000)}K`;
+      fields.recommendation.textContent = level.recommendation;
+
+      renderSummary(score, level, quote);
+    }
+
+    function renderSummary(score, level, quote) {
+      const evidence = getCheckedEvidenceText();
+      const toneLead = {
+        professional: "以下為本案第一頁基本資料與證據力初評摘要：",
+        friendly: "我們先依目前填寫的基本資料，整理出以下重點：",
+        concise: "本案初步摘要如下："
+      };
+      const evidenceText = evidence.length ? evidence.join("、") : "尚未勾選具體證據項目";
+
+      fields.summaryOutput.textContent =
+`${toneLead[fields.tone.value]}
+
+案件類型：${fields.caseType.value}
+客戶姓名：${showValue(fields.customerName.value, "展示版未填")}
+聯絡電話：${showValue(fields.phone.value, "展示版未填")}
+案件地址：${showValue(fields.caseAddress.value)}
+土地段號：${showValue(fields.landSection.value)}
+地號：${showValue(fields.landNumber.value)}
+土地屬性：${fields.landType.value}
+使用分區：${showValue(fields.zoning.value)}
+使用地類別：${showValue(fields.landUse.value)}
+房屋稅起課年：${showValue(fields.taxStartYear.value)}
+航照出現年：${showValue(fields.aerialPhotoYear.value)}
+有無使用執照：${fields.licenseStatus.value}
+
+證據分數：${score} / 100
+證據力等級：${level.label}
+建議報價區間：${moneyRange(quote.min, quote.max)}
+已具備資料：${evidenceText}
+
+備註：
+${showValue(fields.caseNote.value, "尚無備註")}
+
+建議下一步：${fields.nextStep.value}
+客戶說明備註：${showValue(fields.clientMemo.value)}
+
+備註：本摘要為公開展示版前端輸出，正式案件仍需專人依完整資料複核。`;
+    }
+
+    function showPrintNotice(templateName) {
+      fields.printAlert.textContent = `${templateName}：正式版將連接 Google Docs 申請書套印功能`;
+      fields.printAlert.classList.add("is-visible");
+      window.setTimeout(() => fields.printAlert.classList.remove("is-visible"), 3600);
+    }
+
+    async function copySummary() {
+      try {
+        await navigator.clipboard.writeText(fields.summaryOutput.textContent);
+        fields.copySummary.textContent = "已複製";
+      } catch (error) {
+        fields.copySummary.textContent = "請手動複製";
+      }
+      window.setTimeout(() => {
+        fields.copySummary.textContent = "複製客戶摘要";
+      }, 1400);
+    }
+
+    evidenceInputs.forEach((input) => input.addEventListener("change", calculate));
+
+    [
+      fields.caseType,
+      fields.customerName,
+      fields.phone,
+      fields.caseAddress,
+      fields.landSection,
+      fields.landNumber,
+      fields.landType,
+      fields.zoning,
+      fields.landUse,
+      fields.taxStartYear,
+      fields.aerialPhotoYear,
+      fields.licenseStatus,
+      fields.caseNote,
+      fields.serviceDepth,
+      fields.tone,
+      fields.nextStep,
+      fields.clientMemo
+    ].forEach((field) => {
+      field.addEventListener("input", calculate);
+      field.addEventListener("change", calculate);
+    });
+
+    document.querySelectorAll(".quick-btn").forEach((button) => {
+      button.addEventListener("click", () => showPrintNotice(button.dataset.template));
+    });
+
+    document.getElementById("refreshSummary").addEventListener("click", calculate);
+    fields.copySummary.addEventListener("click", copySummary);
+    calculate();
+  </script>
 </body>
 </html>
