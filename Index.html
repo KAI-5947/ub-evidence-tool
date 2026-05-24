@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>未保存登記案件證據力判斷工具</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #005BAC, #00AEEF);
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .header p {
+      margin-top: 10px;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 0 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 22px;
+      color: #005BAC;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 6px;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #005BAC;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #eef6ff;
+      border-left: 6px solid #005BAC;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>未保存登記案件證據力判斷工具</h1>
+    <p>案件初步判斷・證據力分級・報價建議</p>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>案件基本資料</h2>
+
+      <label>客戶姓名</label>
+      <input id="clientName" type="text" placeholder="請輸入客戶姓名">
+
+      <label>案件地址</label>
+      <input id="address" type="text" placeholder="請輸入案件地址">
+
+      <label>土地段號</label>
+      <input id="landSection" type="text" placeholder="例如：檨興段">
+
+      <label>地號</label>
+      <input id="landNo" type="text" placeholder="例如：852地號">
+
+      <label>案件類型</label>
+      <select id="caseType">
+        <option value="">請選擇</option>
+        <option>未保存登記建物案件</option>
+        <option>合法房屋更正編定案件</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h2>證據資料初評</h2>
+
+      <label>房屋稅籍資料</label>
+      <select id="taxEvidence">
+        <option value="0">尚未確認</option>
+        <option value="20">有房屋稅籍資料</option>
+        <option value="10">資料不完整</option>
+        <option value="0">沒有資料</option>
+      </select>
+
+      <label>水電證明</label>
+      <select id="utilityEvidence">
+        <option value="0">尚未確認</option>
+        <option value="20">有早期水電證明</option>
+        <option value="10">有近期水電資料</option>
+        <option value="0">沒有資料</option>
+      </select>
+
+      <label>航照或歷史影像</label>
+      <select id="photoEvidence">
+        <option value="0">尚未確認</option>
+        <option value="20">可清楚判讀建物存在</option>
+        <option value="10">影像可疑但不明確</option>
+        <option value="0">沒有影像佐證</option>
+      </select>
+
+      <label>土地屬性風險</label>
+      <select id="landRisk">
+        <option value="0">一般風險</option>
+        <option value="-10">中度風險</option>
+        <option value="-20">高度風險</option>
+      </select>
+
+      <button onclick="calculateCase()">產生初步判斷</button>
+
+      <div id="result" class="result">請輸入資料後按下「產生初步判斷」。</div>
+    </div>
+
+    <div class="footer">
+      ub-evidence-tool｜GitHub Pages 測試版
+    </div>
+
+  </div>
+
+  <script>
+    function calculateCase() {
+      const clientName = document.getElementById("clientName").value || "未填寫";
+      const address = document.getElementById("address").value || "未填寫";
+      const caseType = document.getElementById("caseType").value || "未選擇";
+
+      const tax = Number(document.getElementById("taxEvidence").value);
+      const utility = Number(document.getElementById("utilityEvidence").value);
+      const photo = Number(document.getElementById("photoEvidence").value);
+      const landRisk = Number(document.getElementById("landRisk").value);
+
+      const score = tax + utility + photo + landRisk;
+
+      let grade = "";
+      let suggestion = "";
+      let price = "";
+
+      if (score >= 50) {
+        grade = "A級：證據力佳";
+        suggestion = "可進入查證型評估或送件前完整規劃。";
+        price = "建議報價：22,000元～45,000元";
+      } else if (score >= 35) {
+        grade = "B級：可進一步查證";
+        suggestion = "建議先補強資料，再判斷是否正式代辦。";
+        price = "建議報價：10,000元～22,000元";
+      } else if (score >= 20) {
+        grade = "C級：資料不足";
+        suggestion = "建議先做書面初評，確認是否值得繼續投入。";
+        price = "建議報價：3,000元～10,000元";
+      } else {
+        grade = "D級：風險偏高";
+        suggestion = "目前不建議直接承接正式代辦，應先補資料。";
+        price = "建議報價：先收快速初評 3,000元";
+      }
+
+      document.getElementById("result").innerText =
+        "客戶姓名：" + clientName + "\n" +
+        "案件地址：" + address + "\n" +
+        "案件類型：" + caseType + "\n\n" +
+        "初步分數：" + score + " 分\n" +
+        "證據等級：" + grade + "\n" +
+        "建議下一步：" + suggestion + "\n" +
+        price;
+    }
+  </script>
+
+</body>
+</html>
